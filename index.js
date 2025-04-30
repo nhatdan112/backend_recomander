@@ -18,7 +18,7 @@ const morgan = require('morgan'); // For request logging
 dotenv.config();
 
 // Validate critical environment variables
-const requiredEnvVars = ['JWT_SECRET', 'TMDB_API_KEY', 'MONGO_URI'];
+const requiredEnvVars = ['JWT_SECRET', 'TMDB_API_KEY', 'MONGO_URI', 'NLP_URL'];
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
     console.error(`Error: ${envVar} is not defined in .env`);
@@ -235,7 +235,7 @@ app.post('/api/recommend-movies', async (req, res) => {
     return res.status(400).json({ error: 'Prompt is required' });
   }
   try {
-    const nlpResponse = await axios.post('http://localhost:5000/generate', {
+    const nlpResponse = await axios.post(process.env.NLP_URL, {
       prompt: `Dựa trên yêu cầu: "${prompt}". Gợi ý 5 phim khác nhau. Trả về danh sách dạng: "1. Tên phim\n2. Tên phim\n3. Tên phim\n4. Tên phim\n5. Tên phim". Chỉ trả về danh sách phim, không thêm thông tin khác. Ví dụ:\n1. The Notebook\n2. La La Land\n3. Before Sunrise\n4. The Fault in Our Stars\n5. Me Before You`,
     });
     const generatedText = nlpResponse.data.generated_text;
